@@ -1,0 +1,1 @@
+print "Detect MD5 Hash Table.\n"
