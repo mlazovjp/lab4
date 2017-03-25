@@ -4,7 +4,7 @@ print "Detect MD5 Hash Table.\n"
 for seg in Segments():
     # For each of the defined elements
     for head in Heads(seg, SegEnd(seg)):
-        # If it's an instruction
+        #flag = GetFlags(head)
         if isData(GetFlags(head)):
             print "Address[%x]: isData() = True" % (head)
 			#if head
@@ -20,3 +20,5 @@ for seg in Segments():
             print "Address[%x]: isCode() = True" % (head)
         else:
 		    print "Address[%x]: Neither code nor data" % (head)
+
+        
