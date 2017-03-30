@@ -3,9 +3,9 @@
 # Jeremy Mlazovsky
 
 
-ea = BeginEA()
-
 from idaapi import *
+
+ea = BeginEA()
 
 print "Determine if any exported functions call a function (which may call a function ..."
 print "that is in the list of functions below.  If an exported function calls a function"
@@ -20,48 +20,41 @@ print "  swprint\n"
 print "Results are in format:"
 print "<function name>:<function called>\n"
 
-for f in Functions(SegStart(ea),SegEnd(ea)):
+#def factorial(n):
+#    print("factorial has been called with n = " + str(n))
+#    if n == 1:
+#        return 1
+#    else:
+#        res = n * factorial(n-1)
+#        print("intermediate result for ", n, " * factorial(" ,n-1, "): ",res)
+#        return res	
+#print(factorial(5))
 
-	# get the end ea of the function
-	end = GetFunctionAttr(f, FUNCATTR_END)
+
+# recursively explore all 
+def recursivelyExploreAllSpecificFunctionsThroughExport(exportName, depth, ea, listOfSpecificFunctions):
+	functionNumber = 0
+	for f in Functions(SegStart(ea),SegEnd(ea)):
+		name = GetFunctionName(f)
+		
+		#end = GetFunctionAttr(f, FUNCATTR_END)
+		
+		#recursivelyExploreAllSpecificFunctionsThroughExport(exportName, depth+1, f, listOfSpecificFunctions)
+		print("Export[%d] %s: Function[%d] %s, Address[0x%x]" % (depth, exportName, functionNumber, name, f))
+		functionNumber += 1
+	print("")
+
+# list of specific functions which we are searching for
+listOfSpecificFunctions = ["strcpy", "sprintf", "wcsncpy", "swprintf"]
+		
+# cycle through all exports
+for i in range(GetEntryPointQty()):
+	ord = GetEntryOrdinal(i)
+	if ord == 0:
+		continue
+	ea = GetEntryPoint(ord)
+	exportName = (GetFunctionName(ea))
+	recursivelyExploreAllSpecificFunctionsThroughExport(exportName, i, ea, listOfSpecificFunctions)
 	
-	for head in Heads(f, end):
-		# If it's an instruction ... (basically redundan since functions are only in code)
-		if isCode(GetFlags(head)):
-			
-			# Get the mnemonic for the current head
-			mnem = GetMnem(head)
-
-			if mnem == "call":				# using an important requires the mnemonic "call", so look for "call"
-			
-				theImport = ""				# reset the import to empty until we can set it properly
-				theImportFound = False		# import was not found yet
-
-				Disasm = GetDisasm(head)	# get the disassembly for this head so we can parse it
-				
-				# We are just going to hope that if we can find "strcpy", "sprintf", "strncpy", "wcsncpy", or "swprintf"
-				# as a substring of the disassembly code here, then we are good *fingers crossed*
-				if Disasm.find("_strcpy") > -1:
-					if len(Disasm) == (Disasm.find("_strcpy") + len("_strcpy")):		# nothing after "_strcpy"
-						theImport = "strcpy"
-						theImportFound = True
-				elif Disasm.find("_sprintf") > -1:
-					if len(Disasm) == (Disasm.find("_sprintf") + len("_sprintf")):		# nothing after "_sprintf"
-						theImport = "sprintf"
-						theImportFound = True
-				elif Disasm.find("_strncpy") > -1:
-					if len(Disasm) == (Disasm.find("_strncpy") + len("_strncpy")):		# nothing after "_strncpy"
-						theImport = "strncpy"
-						theImportFound = True
-				elif Disasm.find("_wcsncpy") > -1:
-					if len(Disasm) == (Disasm.find("_wcsncpy") + len("_wcsncpy")):		# nothing after "_wcsncpy"
-						theImport = "wcsncpy"
-						theImportFound = True
-				elif Disasm.find("_swprintf") > -1:
-					if len(Disasm) == (Disasm.find("_swprintf") + len("_swprintf")):	# nothing after "_swprintf"
-						theImport = "swprintf"
-						theImportFound = True
-				
-				if theImportFound == True:								# one of the specified imports was found
-					name = GetFunctionName(f)							# get the name of the current function
-					print "%s:0x%08x:%s" % (name, head, theImport)		# output in the requested format
+recursivelyExploreAllSpecificFunctionsThroughExport(exportName, 0, 0x40102D, listOfSpecificFunctions)
+	

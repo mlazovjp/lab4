@@ -22,7 +22,7 @@ for f in Functions(SegStart(ea),SegEnd(ea)):
 	end = GetFunctionAttr(f, FUNCATTR_END)
 	
 	for head in Heads(f, end):
-		# If it's an instruction ... (basically redundan since functions are only in code)
+		# If it's an instruction ... (basically redundant since functions are only in code)
 		if isCode(GetFlags(head)):
 			
 			# Get the mnemonic for the current head
