@@ -31,6 +31,19 @@ print "<function name>:<function called>\n"
 #print(factorial(5))
 
 
+def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
+	functionNumber = 0
+	print("")
+	for f in Functions(SegStart(ea),SegEnd(ea)):
+		name = GetFunctionName(f)	
+		#end = GetFunctionAttr(f, FUNCATTR_END)
+
+		print("Function[%d] %s, Address[0x%x]" % (functionNumber, name, f))
+		functionNumber += 1
+		listOfAllFunctionsEAs.append(f)
+
+
+
 # recursively explore all 
 def recursivelyExploreAllSpecificFunctionsThroughExport(exportName, depth, ea, listOfSpecificFunctions):
 	functionNumber = 0
@@ -38,23 +51,46 @@ def recursivelyExploreAllSpecificFunctionsThroughExport(exportName, depth, ea, l
 		name = GetFunctionName(f)
 		
 		#end = GetFunctionAttr(f, FUNCATTR_END)
-		
-		#recursivelyExploreAllSpecificFunctionsThroughExport(exportName, depth+1, f, listOfSpecificFunctions)
+
 		print("Export[%d] %s: Function[%d] %s, Address[0x%x]" % (depth, exportName, functionNumber, name, f))
 		functionNumber += 1
 	print("")
+	
+	
+#def processFunction(targetedFuncEA, currentFuncEA):
+
+	
+
+
+
+
+
 
 # list of specific functions which we are searching for
-listOfSpecificFunctions = ["strcpy", "sprintf", "wcsncpy", "swprintf"]
+listOfAllTargetedFunctionsNames = ["strcpy", "sprintf", "wcsncpy", "swprintf"]
+listOfAllFunctionsEAs = []
+listOfAllExportsEAs = []
 		
-# cycle through all exports
+# generate list of effective addresses for all exports
 for i in range(GetEntryPointQty()):
 	ord = GetEntryOrdinal(i)
 	if ord == 0:
 		continue
-	ea = GetEntryPoint(ord)
-	exportName = (GetFunctionName(ea))
-	recursivelyExploreAllSpecificFunctionsThroughExport(exportName, i, ea, listOfSpecificFunctions)
-	
-recursivelyExploreAllSpecificFunctionsThroughExport(exportName, 0, 0x40102D, listOfSpecificFunctions)
-	
+	addr = GetEntryPoint(ord)
+	#exportName = (GetFunctionName(ea))
+	print("Export[%s]:Address[%x]" % (GetFunctionName(addr), addr))
+	listOfAllExportsEAs.append(addr)
+
+# generate list of effective addresses for all functions
+getListOfAllFunctionsEAs(listOfAllFunctionsEAs)
+
+# iterate through all targeted function names ...
+for targetedFuncName in listOfAllTargetedFunctionsNames:
+	print("targetedFuncName: %s") % targetedFuncName
+
+
+print("\nlistOfAllFunctionsEAs")
+print [hex(functionEA) for functionEA in listOfAllFunctionsEAs]
+
+print("\nlistOfAllExports")
+print [hex(ExportEA) for ExportEA in listOfAllExportsEAs]
