@@ -40,10 +40,21 @@ def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
 	
 
 # recursively traverse calling functions and hope the trail ends with an export function
-def processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs):
-	listOfFunctionsEAsCallingThisFunction.append( CodeRefsTo(currentFuncEA, 0) )
-	print("targetedFuncEA[%x], currentFuncEA[%x]:") % (targetedFuncEA, currentFuncEA)
-	print[hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
+def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
+
+	listOfFunctionsEAsCallingThisFunction = []
+	currentFuncName = GetFunctionName(currentFuncEA)
+	
+	listOfFunctionsEAsCallingThisFunction = CodeRefsTo(currentFuncEA, 0)
+	print("   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
+	
+	if not listOfFunctionsEAsCallingThisFunction:
+		print("   No cross references found for %s") % currentFuncName
+		return
+	
+	print("   Cross references found for %s") % currentFuncName
+	print("   %s") % listOfFunctionsEAsCallingThisFunction
+	print("")
 	
 	# if no functions call this function ....
 	#if not listOfFunctionsEAsCallingThisFunction:
@@ -129,12 +140,10 @@ for targetedFuncName in listOfAllTargetedFunctionsNames:
 		
 		if funcName.find(targetedFuncName) > -1:
 			print("   Found targetedFuncName %s in current funcName %s") % (targetedFuncName, funcName)
+			
+			# we now know the effective address of one of our targeted functions! e.g. strcpy
+			processFunction(targetedFuncName, funcEA, listOfAllExportsEAs)
 		
-		
-	
-	
-	#print("targetedFuncName: %s") % targetedFuncName
-	#processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs)
 
 
 print("\nlistOfAllFunctionsEAs")
