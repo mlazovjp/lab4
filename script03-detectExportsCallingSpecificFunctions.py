@@ -66,7 +66,8 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 		return
 	
 	print("   Cross references found for %s") % currentFuncName
-	print [hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
+	print("   %s") % listOfFunctionsEAsCallingThisFunction
+	#print [hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
 	print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
 	#print("")
 	
@@ -79,16 +80,22 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 		# cycle through list of all exports effeactive addresses
 		for anExportEA in listOfAllExportsEAs:
 		
-			# does fctfEA == effective address of the export we are evaluating?
-			if fctfEA == anExportEA:
-				exportFound = True
-				print("   fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
-				print("   %s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
-			else:
-				print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
+			if not fctfEA:
+				print("     not fctfEA")
 				
-		if exportFound == False:
-			processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
+			else:
+				print("     fctfEA (0x%x") % fctfEA
+		
+				# does fctfEA == effective address of the export we are evaluating?
+				if fctfEA == anExportEA:
+					exportFound = True
+					print("   fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
+					print("   %s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
+				else:
+					print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
+				
+				if exportFound == False:
+					processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
 			#nextEA = GetFchunkAttr(fctfEA, FUNCATTR_START)
 			
 			#if not nextEA:
