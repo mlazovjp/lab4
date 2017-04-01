@@ -51,12 +51,14 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 	print("   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
 	
 	if not listOfFunctionsEAsCallingThisFunction:
-		print("   No cross references found for %s") % currentFuncName
+		print("   No cross references found for %s [0x%x]") % (currentFuncName, currentFuncEA)
+		print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
 		print("")
 		return
 	
 	print("   Cross references found for %s") % currentFuncName
 	print [hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
+	print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
 	print("")
 	
 	# continue processing
@@ -71,10 +73,21 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 			# does fctfEA == effective address of the export we are evaluating?
 			if fctfEA == anExportEA:
 				exportFound = True
+				print("fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
 				print("%s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
+			else:
+				print("fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
 				
 		if exportFound == False:
-			processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
+			#processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
+			nextEA = GetFchunkAttr(fctfEA, FUNCATTR_START)
+			
+			if not nextEA:
+				print("     No result for GetFchunkAttr(0x%x, FUNCATTR_START)\n" % fctfEA)
+			else:
+				print("     Result for GetFchunkAttr(0x%x, FUNCATTR_START): 0x%x\n" % (fctfEA, nextEA))
+				processFunction(targetedFuncName, GetFchunkAttr(fctfEA, FUNCATTR_START), listOfAllExportsEAs)
+			
 		
 
 		
@@ -104,7 +117,7 @@ for targetedFuncName in listOfAllTargetedFunctionsNames:
 		print("Comparing targetedFuncName %s to funcName %s") % (targetedFuncName, funcName)
 		
 		if funcName.find(targetedFuncName) > -1:
-			print("   Found targetedFuncName %s in current funcName %s") % (targetedFuncName, funcName)
+			print("   \nFound targetedFuncName %s in current funcName %s") % (targetedFuncName, funcName)
 			
 			# we now know the effective address of one of our targeted functions! e.g. strcpy
 			processFunction(targetedFuncName, funcEA, listOfAllExportsEAs)
