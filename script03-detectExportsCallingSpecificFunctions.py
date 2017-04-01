@@ -31,7 +31,7 @@ def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
 	functionNumber = 0
 	print("")
 	for f in Functions(SegStart(ea),SegEnd(ea)):
-		name = GetFunctionName(f)	
+		name = GetFunctionName(f)
 		#end = GetFunctionAttr(f, FUNCATTR_END)
 
 		print("Function[%d] %s, Address[0x%x]" % (functionNumber, name, f))
@@ -116,11 +116,44 @@ for i in range(GetEntryPointQty()):
 getListOfAllFunctionsEAs(listOfAllFunctionsEAs)
 
 # iterate through all targeted function names ...
-#for targetedFuncName in listOfAllTargetedFunctionsNames:
 for targetedFuncName in listOfAllTargetedFunctionsNames:
+
+	#print("targetedFuncName: %s") % targetedFuncName
+
+	# parse each function name and compare it to list of targeted function names
+	# if a match, then we traverse backwards from calling function accordingly, looking for export function if it exists
 	
-	print("targetedFuncName: %s") % targetedFuncName
-	processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs)
+	print("")
+	
+	for funcEA in listOfAllFunctionsEAs:
+	
+		funcName = GetFunctionName(funcEA)
+		print("Comparing targetedFuncName %s to funcName %s") % (targetedFuncName, funcName)
+	
+		if funcName.find("strcpy") > -1:
+			if len(funcName) == (funcName.find("strcpy") + len("strcpy")):		# nothing after "strcpy"
+				print("   funcName %s == strcpy") % (funcName)
+				#processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs)
+					
+		elif funcName.find("sprintf") > -1:
+			if len(funcName) == (funcName.find("sprintf") + len("sprintf")):		# nothing after "sprintf"
+				print("   funcName %s == sprintf") % (funcName)
+					
+		elif funcName.find("strncpy") > -1:
+			if len(funcName) == (funcName.find("strncpy") + len("strncpy")):		# nothing after "strncpy"
+				print("   funcName %s == strncpy") % (funcName)
+					
+		elif funcName.find("wcsncpy") > -1:
+			if len(funcName) == (funcName.find("wcsncpy") + len("wcsncpy")):		# nothing after "wcsncpy"
+				print("   funcName %s == wcsncpy") % (funcName)
+					
+		elif funcName.find("swprintf") > -1:
+			if len(funcName) == (funcName.find("swprintf") + len("swprintf")):	# nothing after "swprintf"
+				print("   funcName %s == swprintf") % (funcName)
+	
+	
+	#print("targetedFuncName: %s") % targetedFuncName
+	#processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs)
 
 
 print("\nlistOfAllFunctionsEAs")
