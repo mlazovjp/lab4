@@ -88,14 +88,14 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 				print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
 				
 		if exportFound == False:
-			#processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
-			nextEA = GetFchunkAttr(fctfEA, FUNCATTR_START)
+			processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
+			#nextEA = GetFchunkAttr(fctfEA, FUNCATTR_START)
 			
-			if not nextEA:
-				print("     No result for GetFchunkAttr(0x%x, FUNCATTR_START)\n" % fctfEA)
-			else:
-				print("     Result for GetFchunkAttr(0x%x, FUNCATTR_START): 0x%x\n" % (fctfEA, nextEA))
-				processFunction(targetedFuncName, GetFchunkAttr(fctfEA, FUNCATTR_START), listOfAllExportsEAs)
+			#if not nextEA:
+			#	print("     No result for GetFchunkAttr(0x%x, FUNCATTR_START)\n" % fctfEA)
+			#else:
+			#	print("     Result for GetFchunkAttr(0x%x, FUNCATTR_START): 0x%x\n" % (fctfEA, nextEA))
+			#	processFunction(targetedFuncName, GetFchunkAttr(fctfEA, FUNCATTR_START), listOfAllExportsEAs)
 			
 		
 
