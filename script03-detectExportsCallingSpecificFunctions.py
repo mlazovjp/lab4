@@ -43,11 +43,20 @@ def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
 def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 
 	listOfFunctionsEAsCallingThisFunction = []
+	tempListOfFunctionsEAsCallingThisFunction = []
 	currentFuncName = GetFunctionName(currentFuncEA)
 	
 	
 	#listOfFunctionsEAsCallingThisFunction = CodeRefsTo(SegStart(currentFuncEA), 0) # I need this to return ea of the function this head exists in
-	listOfFunctionsEAsCallingThisFunction = CodeRefsTo(currentFuncEA, 0) # I need this to return ea of the function this head exists in
+	tempListOfFunctionsEAsCallingThisFunction = CodeRefsTo(currentFuncEA, 0) # I need this to return ea of the function this head exists in
+	
+	for item in tempListOfFunctionsEAsCallingThisFunction:
+		listOfFunctionsEAsCallingThisFunction.append(GetFchunkAttr(item, FUNCATTR_START))
+	
+	
+	#for fixEA in listOfFunctionsEAsCallingThisFunction:
+	#	fixEA = GetFchunkAttr(fixEA, FUNCATTR_START)
+	
 	print("\n   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
 	
 	if not listOfFunctionsEAsCallingThisFunction:
