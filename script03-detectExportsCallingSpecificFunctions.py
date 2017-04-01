@@ -20,15 +20,11 @@ print "  swprint\n"
 print "Results are in format:"
 print "<function name>:<function called>\n"
 
-#def factorial(n):
-#    print("factorial has been called with n = " + str(n))
-#    if n == 1:
-#        return 1
-#    else:
-#        res = n * factorial(n-1)
-#        print("intermediate result for ", n, " * factorial(" ,n-1, "): ",res)
-#        return res	
-#print(factorial(5))
+
+# list of specific functions which we are searching for
+listOfAllTargetedFunctionsNames = ["strcpy", "sprintf", "wcsncpy", "swprintf"]
+listOfAllFunctionsEAs = []
+listOfAllExportsEAs = []
 
 
 def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
@@ -41,35 +37,68 @@ def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
 		print("Function[%d] %s, Address[0x%x]" % (functionNumber, name, f))
 		functionNumber += 1
 		listOfAllFunctionsEAs.append(f)
+	
 
-
-
-# recursively explore all 
-def recursivelyExploreAllSpecificFunctionsThroughExport(exportName, depth, ea, listOfSpecificFunctions):
-	functionNumber = 0
-	for f in Functions(SegStart(ea),SegEnd(ea)):
-		name = GetFunctionName(f)
+# recursively traverse calling functions and hope the trail ends with an export function
+def processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs):
+	listOfFunctionsEAsCallingThisFunction.append( CodeRefsTo(currentFuncEA, 0) )
+	
+	# if no functions call this function ....
+	if not listOfFunctionsEAsCallingThisFunction:
+		return
+	
+	# continue processing
+	for fctfEA in listOfFunctionsEAsCallingThisFunction:
+	
+		# reset boolean ... no export found in this pass
+		exportFound = False
 		
-		#end = GetFunctionAttr(f, FUNCATTR_END)
+		# cycle through list of all exports
+		for anExport in listOfAllExportsEAs:
+		
+			# get the name of the export
+			exportName = (GetFunctionName(anExport))
+			
+			# get name of the function
+			fctfName = GetFunctionName(fctfEA)
+			
+			# compare name of the current "function calling this function" to the list of names of exports
+			# we haev to do some trickery to parse the "clean" version of the function
+			if exportName.find("_strcpy") > -1:
+				if len(exportName) == (exportName.find("_strcpy") + len("_strcpy")):		# nothing after "_strcpy"
+					exportFound = True
+					print("%s:strcpy") % exportName
+					continue
+					
+			elif exportName.find("_sprintf") > -1:
+				if len(exportName) == (exportName.find("_sprintf") + len("_sprintf")):		# nothing after "_sprintf"
+					exportFound = True
+					print("%s:sprintf") % exportName
+					continue
+					
+			elif exportName.find("_strncpy") > -1:
+				if len(exportName) == (exportName.find("_strncpy") + len("_strncpy")):		# nothing after "_strncpy"
+					exportFound = True
+					print("%s:strncpy") % exportName
+					continue
+					
+			elif exportName.find("_wcsncpy") > -1:
+				if len(exportName) == (exportName.find("_wcsncpy") + len("_wcsncpy")):		# nothing after "_wcsncpy"
+					exportFound = True
+					print("%s:wcsncpy") % exportName
+					continue
+					
+			elif exportName.find("_swprintf") > -1:
+				if len(exportName) == (exportName.find("_swprintf") + len("_swprintf")):	# nothing after "_swprintf"
+					exportFound = True
+					print("%s:swprintf") % exportName
+					continue
+					
+					
+			if exportFound == False:
+				processFunction(targetedFuncEA, fctfEA, listOfAllExportsEAs)
 
-		print("Export[%d] %s: Function[%d] %s, Address[0x%x]" % (depth, exportName, functionNumber, name, f))
-		functionNumber += 1
-	print("")
-	
-	
-#def processFunction(targetedFuncEA, currentFuncEA):
 
-	
-
-
-
-
-
-
-# list of specific functions which we are searching for
-listOfAllTargetedFunctionsNames = ["strcpy", "sprintf", "wcsncpy", "swprintf"]
-listOfAllFunctionsEAs = []
-listOfAllExportsEAs = []
 		
 # generate list of effective addresses for all exports
 for i in range(GetEntryPointQty()):
@@ -85,8 +114,11 @@ for i in range(GetEntryPointQty()):
 getListOfAllFunctionsEAs(listOfAllFunctionsEAs)
 
 # iterate through all targeted function names ...
+#for targetedFuncName in listOfAllTargetedFunctionsNames:
 for targetedFuncName in listOfAllTargetedFunctionsNames:
+	
 	print("targetedFuncName: %s") % targetedFuncName
+	processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs)
 
 
 print("\nlistOfAllFunctionsEAs")
