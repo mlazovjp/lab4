@@ -29,12 +29,12 @@ listOfAllExportsEAs = []
 
 def getListOfAllFunctionsEAs(listOfAllFunctionsEAs):
 	functionNumber = 0
-	print("")
+	#print("")
 	for f in Functions(SegStart(ea),SegEnd(ea)):
 		name = GetFunctionName(f)
 		#end = GetFunctionAttr(f, FUNCATTR_END)
 
-		print("Function[%d] %s, Address[0x%x]" % (functionNumber, name, f))
+		#print("Function[%d] %s, Address[0x%x]" % (functionNumber, name, f))
 		functionNumber += 1
 		listOfAllFunctionsEAs.append(f)
 	
@@ -53,22 +53,18 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 	for item in tempListOfFunctionsEAsCallingThisFunction:
 		listOfFunctionsEAsCallingThisFunction.append(GetFchunkAttr(item, FUNCATTR_START))
 	
-	
-	#for fixEA in listOfFunctionsEAsCallingThisFunction:
-	#	fixEA = GetFchunkAttr(fixEA, FUNCATTR_START)
-	
-	print("\n   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
+	#print("\n   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
 	
 	if not listOfFunctionsEAsCallingThisFunction:
-		print("   No cross references found for %s [0x%x]") % (currentFuncName, currentFuncEA)
-		print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
-		print("")
+		#print("   No cross references found for %s [0x%x]") % (currentFuncName, currentFuncEA)
+		#print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
+		#print("")
 		return
 	
-	print("   Cross references found for %s") % currentFuncName
-	print("   %s") % listOfFunctionsEAsCallingThisFunction
+	#print("   Cross references found for %s") % currentFuncName
+	#print("   %s") % listOfFunctionsEAsCallingThisFunction
 	#print [hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
-	print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
+	#print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
 	#print("")
 	
 	# continue processing
@@ -81,18 +77,18 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 		for anExportEA in listOfAllExportsEAs:
 		
 			if not fctfEA:
-				print("     not fctfEA")
-				
+				#print("     not fctfEA")
+				donothing = True
 			else:
-				print("     fctfEA (0x%x") % fctfEA
-		
+				#print("     fctfEA (0x%x") % fctfEA
 				# does fctfEA == effective address of the export we are evaluating?
 				if fctfEA == anExportEA:
 					exportFound = True
-					print("   fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
+					#print("   fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
 					print("   %s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
 				else:
-					print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
+					#print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
+					donothing = True
 				
 				if exportFound == False:
 					processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
@@ -114,7 +110,7 @@ for i in range(GetEntryPointQty()):
 		continue
 	addr = GetEntryPoint(ord)
 	#exportName = (GetFunctionName(ea))
-	print("Export[%s]:Address[%x]" % (GetFunctionName(addr), addr))
+	#print("Export[%s]:Address[%x]" % (GetFunctionName(addr), addr))
 	listOfAllExportsEAs.append(addr)
 
 # generate list of effective addresses for all functions
@@ -123,25 +119,25 @@ getListOfAllFunctionsEAs(listOfAllFunctionsEAs)
 # iterate through all targeted function names ...
 for targetedFuncName in listOfAllTargetedFunctionsNames:
 
-	print("")
+	#print("")
 	
 	# parse each function name and compare it to list of targeted function names
 	# if a match, then we traverse backwards from calling function accordingly, looking for export function if it exists
 	for funcEA in listOfAllFunctionsEAs:
 	
 		funcName = GetFunctionName(funcEA)
-		print("Comparing targetedFuncName %s to funcName %s") % (targetedFuncName, funcName)
+		#print("Comparing targetedFuncName %s to funcName %s") % (targetedFuncName, funcName)
 		
 		if funcName.find(targetedFuncName) > -1:
-			print("   \nFound targetedFuncName %s in current funcName %s") % (targetedFuncName, funcName)
+			#print("   \nFound targetedFuncName %s in current funcName %s") % (targetedFuncName, funcName)
 			
 			# we now know the effective address of one of our targeted functions! e.g. strcpy
 			processFunction(targetedFuncName, funcEA, listOfAllExportsEAs)
 		
 
 
-print("\nlistOfAllFunctionsEAs")
-print [hex(functionEA) for functionEA in listOfAllFunctionsEAs]
+#print("\nlistOfAllFunctionsEAs")
+#print [hex(functionEA) for functionEA in listOfAllFunctionsEAs]
 
-print("\nlistOfAllExports")
-print [hex(ExportEA) for ExportEA in listOfAllExportsEAs]
+#print("\nlistOfAllExports")
+#print [hex(ExportEA) for ExportEA in listOfAllExportsEAs]
