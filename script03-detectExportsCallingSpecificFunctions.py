@@ -86,6 +86,7 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 					exportFound = True
 					#print("   fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
 					print("   %s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
+					return
 				else:
 					#print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
 					donothing = True
