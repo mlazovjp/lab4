@@ -45,72 +45,37 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 	listOfFunctionsEAsCallingThisFunction = []
 	currentFuncName = GetFunctionName(currentFuncEA)
 	
-	listOfFunctionsEAsCallingThisFunction = CodeRefsTo(currentFuncEA, 0)
+	
+	#listOfFunctionsEAsCallingThisFunction = CodeRefsTo(SegStart(currentFuncEA), 0) # I need this to return ea of the function this head exists in
+	listOfFunctionsEAsCallingThisFunction = CodeRefsTo(currentFuncEA, 0) # I need this to return ea of the function this head exists in
 	print("   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
 	
 	if not listOfFunctionsEAsCallingThisFunction:
 		print("   No cross references found for %s") % currentFuncName
+		print("")
 		return
 	
 	print("   Cross references found for %s") % currentFuncName
-	print("   %s") % listOfFunctionsEAsCallingThisFunction
+	print [hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
 	print("")
 	
-	# if no functions call this function ....
-	#if not listOfFunctionsEAsCallingThisFunction:
-	#	return
-	
 	# continue processing
-	#for fctfEA in listOfFunctionsEAsCallingThisFunction:
+	for fctfEA in listOfFunctionsEAsCallingThisFunction:
 	
 		# reset boolean ... no export found in this pass
-	#	exportFound = False
+		exportFound = False
 		
-		# cycle through list of all exports
-	#	for anExport in listOfAllExportsEAs:
+		# cycle through list of all exports effeactive addresses
+		for anExportEA in listOfAllExportsEAs:
 		
-			# get the name of the export
-	#		exportName = (GetFunctionName(anExport))
-			
-			# get name of the function
-	#		fctfName = GetFunctionName(fctfEA)
-			
-			# compare name of the current "function calling this function" to the list of names of exports
-			# we haev to do some trickery to parse the "clean" version of the function
-	#		if exportName.find("_strcpy") > -1:
-	#			if len(exportName) == (exportName.find("_strcpy") + len("_strcpy")):		# nothing after "_strcpy"
-	#				exportFound = True
-	#				print("%s:strcpy") % exportName
-	#				continue
-					
-	#		elif exportName.find("_sprintf") > -1:
-	#			if len(exportName) == (exportName.find("_sprintf") + len("_sprintf")):		# nothing after "_sprintf"
-	#				exportFound = True
-	#				print("%s:sprintf") % exportName
-	#				continue
-					
-	#		elif exportName.find("_strncpy") > -1:
-	#			if len(exportName) == (exportName.find("_strncpy") + len("_strncpy")):		# nothing after "_strncpy"
-	#				exportFound = True
-	#				print("%s:strncpy") % exportName
-	#				continue
-					
-	#		elif exportName.find("_wcsncpy") > -1:
-	#			if len(exportName) == (exportName.find("_wcsncpy") + len("_wcsncpy")):		# nothing after "_wcsncpy"
-	#				exportFound = True
-	#				print("%s:wcsncpy") % exportName
-	#				continue
-					
-	#		elif exportName.find("_swprintf") > -1:
-	#			if len(exportName) == (exportName.find("_swprintf") + len("_swprintf")):	# nothing after "_swprintf"
-	#				exportFound = True
-	#				print("%s:swprintf") % exportName
-	#				continue
-					
-					
-	#		if exportFound == False:
-	#			processFunction(targetedFuncEA, fctfEA, listOfAllExportsEAs)
-
+			# does fctfEA == effective address of the export we are evaluating?
+			if fctfEA == anExportEA:
+				exportFound = True
+				print("%s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
+				
+		if exportFound == False:
+			processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
+		
 
 		
 # generate list of effective addresses for all exports
