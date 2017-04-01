@@ -118,38 +118,19 @@ getListOfAllFunctionsEAs(listOfAllFunctionsEAs)
 # iterate through all targeted function names ...
 for targetedFuncName in listOfAllTargetedFunctionsNames:
 
-	#print("targetedFuncName: %s") % targetedFuncName
-
-	# parse each function name and compare it to list of targeted function names
-	# if a match, then we traverse backwards from calling function accordingly, looking for export function if it exists
-	
 	print("")
 	
+	# parse each function name and compare it to list of targeted function names
+	# if a match, then we traverse backwards from calling function accordingly, looking for export function if it exists
 	for funcEA in listOfAllFunctionsEAs:
 	
 		funcName = GetFunctionName(funcEA)
 		print("Comparing targetedFuncName %s to funcName %s") % (targetedFuncName, funcName)
-	
-		if funcName.find("strcpy") > -1:
-			if len(funcName) == (funcName.find("strcpy") + len("strcpy")):		# nothing after "strcpy"
-				print("   funcName %s == strcpy") % (funcName)
-				#processFunction(targetedFuncEA, currentFuncEA, listOfAllExportsEAs)
-					
-		elif funcName.find("sprintf") > -1:
-			if len(funcName) == (funcName.find("sprintf") + len("sprintf")):		# nothing after "sprintf"
-				print("   funcName %s == sprintf") % (funcName)
-					
-		elif funcName.find("strncpy") > -1:
-			if len(funcName) == (funcName.find("strncpy") + len("strncpy")):		# nothing after "strncpy"
-				print("   funcName %s == strncpy") % (funcName)
-					
-		elif funcName.find("wcsncpy") > -1:
-			if len(funcName) == (funcName.find("wcsncpy") + len("wcsncpy")):		# nothing after "wcsncpy"
-				print("   funcName %s == wcsncpy") % (funcName)
-					
-		elif funcName.find("swprintf") > -1:
-			if len(funcName) == (funcName.find("swprintf") + len("swprintf")):	# nothing after "swprintf"
-				print("   funcName %s == swprintf") % (funcName)
+		
+		if funcName.find(targetedFuncName) > -1:
+			print("   Found targetedFuncName %s in current funcName %s") % (targetedFuncName, funcName)
+		
+		
 	
 	
 	#print("targetedFuncName: %s") % targetedFuncName
