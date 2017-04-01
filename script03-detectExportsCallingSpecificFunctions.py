@@ -48,7 +48,7 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 	
 	#listOfFunctionsEAsCallingThisFunction = CodeRefsTo(SegStart(currentFuncEA), 0) # I need this to return ea of the function this head exists in
 	listOfFunctionsEAsCallingThisFunction = CodeRefsTo(currentFuncEA, 0) # I need this to return ea of the function this head exists in
-	print("   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
+	print("\n   targetedFuncName is %s, currentFuncName %s [0x%x]:") % (targetedFuncName, currentFuncName, currentFuncEA)
 	
 	if not listOfFunctionsEAsCallingThisFunction:
 		print("   No cross references found for %s [0x%x]") % (currentFuncName, currentFuncEA)
@@ -59,7 +59,7 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 	print("   Cross references found for %s") % currentFuncName
 	print [hex(ea) for ea in listOfFunctionsEAsCallingThisFunction]
 	print("   %s starting address[0x%x]") % (currentFuncName, GetFchunkAttr(currentFuncEA, FUNCATTR_START))
-	print("")
+	#print("")
 	
 	# continue processing
 	for fctfEA in listOfFunctionsEAsCallingThisFunction:
@@ -73,10 +73,10 @@ def processFunction(targetedFuncName, currentFuncEA, listOfAllExportsEAs):
 			# does fctfEA == effective address of the export we are evaluating?
 			if fctfEA == anExportEA:
 				exportFound = True
-				print("fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
-				print("%s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
+				print("   fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
+				print("   %s:%s") % (GetFunctionName(anExportEA), targetedFuncName)
 			else:
-				print("fctfEA (0x%x) == anExportEA (0x%x)") % (fctfEA, anExportEA)
+				print("   fctfEA (0x%x) <> anExportEA (0x%x)") % (fctfEA, anExportEA)
 				
 		if exportFound == False:
 			#processFunction(targetedFuncName, fctfEA, listOfAllExportsEAs)
